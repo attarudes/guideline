@@ -12,7 +12,7 @@ Overview
 | ただし、提供される機能は限定的なものであるため、Spring Securityが対応していない暗号化処理については、別途実装する必要がある。
 | 本ガイドラインでは、Spring Securityを利用した共通鍵暗復号 / 疑似乱数の生成処理、および、Javaでの公開鍵暗復号処理について説明する。
 
-| Spring Securityの詳細については\ `公式リファレンス <http://docs.spring.io/spring-security/site/docs/3.2.5.RELEASE/reference/htmlsingle/#crypto>`_\ を参照されたい。
+| Spring Securityにおける暗号化機能の詳細については\ `公式リファレンス <http://docs.spring.io/spring-security/site/docs/3.2.5.RELEASE/reference/htmlsingle/#crypto>`_\ を参照されたい。
 
 暗号化方式
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -38,13 +38,24 @@ Overview
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 | 暗号化アルゴリズムについて説明する。
 
+DES / 3DES
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+| DES (Data Encryption Standard)
+| 3DES (トリプルDES)
+
+DES (Data Encryption Standard) は共通暗号化方式のアルゴリズムとして、アメリカ合衆国の標準規格として規格化されたものである。鍵長が56ビットと短いことから、現在では推奨されていない。3DES、トリプルDESは、鍵を変えながらDESを繰り返す暗号化アルゴリズムである。
+
 AES
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-| AES (Advanced Encryption Standard)は共通鍵暗号化方式のアルゴリズムである。DESの後継として制定された暗号化規格であり、暗号化におけるデファクトスタンダードとして利用されている。
+| AES (Advanced Encryption Standard)は共通鍵暗号化方式のアルゴリズムである。DESの後継として制定された暗号化規格であり、暗号化における現在のデファクトスタンダードとして利用されている。
 
 RSA
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 | RSAは公開鍵暗号化方式のアルゴリズムである。素因数分解の困難性に基づいているため、計算機の能力向上により危殆化することとなる。いわゆる「暗号化アルゴリズムの2010年問題」として指摘されているように充分な長さが必要であり、現時点では2048ビットが標準的に利用されている。
+
+DSA / ECDSA
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+| DSA (Digital Signature Algorithm) は、デジタル署名のための標準規格である。離散対数問題の困難性に基づいている。ECDSA (Elliptic Curve DSA : 楕円曲線DSA)は、楕円曲線暗号を用いたDSAの変種である。楕円曲線暗号においては、セキュリティレベルを確保するために必要となる鍵長が短くなるというメリットがある。
 
 疑似乱数 (生成器)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -55,13 +66,38 @@ RSA
 Cipher
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 | CipherはAESやRSAなどの暗号化アルゴリズム、ECBやCBCなどの暗号モード、PKCS1などのパディング形式の組み合わせである。
-| Javaアプリケーションでは、``"RSA/ECB/PKCS1Padding"``\ という形で指定する。
+| Javaアプリケーションでは、\ ``"RSA/ECB/PKCS1Padding"``\ という形で指定する。
+
+Spring Securityにおける暗号化機能
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+| Spring Securityでは、共通鍵暗号化方式での暗 / 復号機能を提供している。
+| 暗号化アルゴリズムは256-bit AES using PKCS #5’s PBKDF2 (Password-Based Key Derivation Function #2)である。
+
+| 共通鍵暗号化方式であるため、鍵を受け渡す必要がない状況における暗号化、あるいは、公開鍵暗号化方式と組み合わせた形で利用に限定することが望ましい。
+
+| Spring Securityでは、共通鍵暗号化方式での暗 / 復号機能として、以下のインターフェイスが用意されている。
+
+* ``org.springframework.security.crypto.encrypt.TextEncryptor``
+* ``org.springframework.security.crypto.encrypt.BytesEncryptor``
+
+| これらの実装クラスとして、テキスト用の ``org.springframework.security.crypto.encrypt.HexEncodingTextEncryptor``\ クラスやバイト配列用の\ ``org.springframework.security.crypto.encrypt.AesBytesEncryptor``\ クラスが提供されている。
+
+| \ ``TextEncryptor``\ / \ ``BytesEncryptor``\ の仕組みとして、\ ``encrypt``\ メソッドで暗号化を行ない、\ ``decrypt(byte[] encryptedBytes)``\ メソッドで復号処理を行なう。
+  
+| また、乱数(鍵)生成の機能として、以下のインターフェイスが用意されている。
+
+* \ ``org.springframework.security.crypto.keygen.StringKeyGenerator``\ 
+* \ ``org.springframework.security.crypto.keygen.BytesKeyGenerator``\ 
+
+| 前者の実装クラスとして、テキスト用の \ ``org.springframework.security.crypto.keygen.HexEncodingStringKeyGenerator``\ クラスが提供されており、後者の実装クラスとして、バイト配列用の以下のクラスが提供されている。
+
+* \ ``org.springframework.security.crypto.keygen.SecureRandomBytesKeyGenerator``\
+* \ ``org.springframework.security.crypto.keygen.SharedKeyGenerator``\
+
+| \ ``StringKeyGenerator``\ / \ ``BytesKeyGenerator``\ の仕組みとして、\ ``generateKey`` \ メソッドで乱数(鍵)の生成を行なう。
 
 How to use
 --------------------------------------------------------------------------------
-
-| Spring Securityでは、共通鍵暗号化方式での暗 / 復号機能を提供している。
-| 暗号化アルゴリズムは256-bit AES using PKCS #5’s PBKDF2 (Password-Based Key Derivation Function #2)である。
 
 | JavaでAESの鍵長256ビットを扱うためには、強度が無制限のJCE管轄ポリシーファイルを適用する必要がある。
 
@@ -78,7 +114,7 @@ TextEncryptorによるテキストの暗号化
 
   .. code-block:: java
 
-    public static String EncryptText(
+    public static String encryptText(
         String secret, String salt, String text) {
         TextEncryptor encryptor = Encryptors.text(secret, salt); // (1)
 
@@ -95,21 +131,53 @@ TextEncryptorによるテキストの暗号化
      * - | (1)
        - | 共通鍵とソルトを指定して\ ``TextEncryptor``\ オブジェクトのインスタンスを生成する。
          | このときに指定した共通鍵、ソルトは、復号時にも同じものを利用することになる。
-         |
-         | \ ``text``\ メソッドで生成される\ ``TextEncryptor``\ オブジェクトは、初期化ベクトルがランダムであるため、暗号化の際に異なる結果を返す。
-         |
-         | 暗号化した結果として同じ値が必要な場合は、\ ``queryableText``\ メソッドを利用してインスタンスを生成する。
-         | セキュリティ強度が落ちる点を踏まえ、使用の可否を検討してほしい。
 
      * - | (2)
        - | \ ``encrypt``\ メソッドで暗号化処理を実行する。
+
+同一の暗号化結果を得る
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  .. code-block:: java
+
+    public void String encryptTextResult(
+        String secret, String salt, String text) {
+        TextEncryptor encryptor1 = Encryptors.text(secret, salt); // (1)
+        TextEncryptor encryptor2 = Encryptors.queryableText(secret, salt); // (2)
+
+        System.out.println(encryptor1.encrypt(text)); // (3)
+        System.out.println(encryptor1.encrypt(text)); // 
+        System.out.println(encryptor2.encrypt(text)); // (4)
+        System.out.println(encryptor2.encrypt(text)); //
+    }
+
+  .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+  .. list-table::
+     :header-rows: 1
+     :widths: 10 90
+  
+     * - 項番
+       - 説明
+     * - | (1)
+       - | \ ``text``\ メソッドで生成される\ ``TextEncryptor``\ オブジェクトは、初期化ベクトルがランダムであるため、暗号化の際に異なる結果を返す。
+
+     * - | (2)
+       - | 暗号化した結果として同じ値が必要な場合は、\ ``queryableText``\ メソッドを利用してインスタンスを生成する。
+
+     * - | (3)
+       - | \ ``text``\ メソッドで生成した\ ``TextEncryptor``\ オブジェクトは、\ ``encrypt``\ メソッドでの暗号化の結果として異なる値を返す。ただし、当然のことながら、鍵とソルトが同一であれば、暗号化の結果が異なっている場合でも、復号処理の結果は同一になる(正しく復号できる)。
+	 
+     * - | (4)
+       - | \ ``queryableText``\ メソッドで生成した\ ``TextEncryptor``\ オブジェクトは、\ ``encrypt``\ メソッドでの暗号化の結果として同一の値を返す。暗号化した結果を用いてデータベースの検索を行なうようなケースで利用できる。
+
+         | セキュリティ強度が落ちる点を踏まえ、使用の可否を検討してほしい。
 
 TextEncryptorによるテキストの復号
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   .. code-block:: java
 
-    public static String DecryptText(String secret, String salt, String text) {
+    public static String decryptText(String secret, String salt, String text) {
         TextEncryptor decryptor = Encryptors.text(secret, salt); // (1)
 
         return decryptor.decrypt(text); // (2)
@@ -134,7 +202,7 @@ BytesEncryptorによるバイト配列の暗号化
 
   .. code-block:: java
 
-    public static byte[] EncryptBytes(String secret, String salt, byte[] raw) {
+    public static byte[] encryptBytes(String secret, String salt, byte[] raw) {
         BytesEncryptor encryptor = Encryptors.standard(secret, salt); // (1)
 
         return encryptor.encrypt(raw); // (2)
@@ -159,7 +227,7 @@ BytesEncryptorによるバイト配列の復号
 
   .. code-block:: java
 
-    public static byte[] DecryptBytes(String secret, String salt, byte[] raw) {
+    public static byte[] decryptBytes(String secret, String salt, byte[] raw) {
         BytesEncryptor decryptor = Encryptors.standard(secret, salt);
 
         return decryptor.decrypt(raw); // (1)
@@ -184,10 +252,10 @@ ByteKeyGeneratorによるバイト配列型の疑似乱数 / 鍵生成
 
   .. code-block:: java
 
-    public static void CreateDifferentBytesKey() {
+    public static void createDifferentBytesKey() {
         BytesKeyGenerator generator = KeyGenerators.secureRandom(); // (1)
         System.out.println(Arrays.toString(generator.generateKey())); // (2)
-        System.out.println(Arrays.toString(generator.generateKey())); // (2)
+        System.out.println(Arrays.toString(generator.generateKey())); //
     }
 
   .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -198,7 +266,7 @@ ByteKeyGeneratorによるバイト配列型の疑似乱数 / 鍵生成
      * - 項番
        - 説明
      * - | (1)
-       - | 鍵(疑似乱数)生成器\ ``BytesKeyGenerator``\ のインスタンスを生成する。
+       - | 鍵(疑似乱数)生成器\ ``BytesKeyGenerator``\ オブジェクトのインスタンスを生成する。
          | この生成器で鍵を生成すると、毎回異なる値が生成される。
          |
          | 鍵長を指定しない場合、デフォルトで8バイトの鍵が生成される。
@@ -208,10 +276,10 @@ ByteKeyGeneratorによるバイト配列型の疑似乱数 / 鍵生成
 
   .. code-block:: java
 
-    public static void CreateSameBytesKey() {
+    public static void createSameBytesKey() {
         BytesKeyGenerator generator = KeyGenerators.shared(16); // (1)
         System.out.println(Arrays.toString(generator.generateKey())); // (2)
-        System.out.println(Arrays.toString(generator.generateKey())); // (2)
+        System.out.println(Arrays.toString(generator.generateKey())); //
     }
 
   .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -222,7 +290,7 @@ ByteKeyGeneratorによるバイト配列型の疑似乱数 / 鍵生成
      * - 項番
        - 説明
      * - | (1)
-       - | 鍵生成器\ ``BytesKeyGenerator``\ のインスタンスを生成する。
+       - | 鍵生成器\ ``BytesKeyGenerator``\ オブジェクトのインスタンスを生成する。
          | この生成器で鍵を生成すると、毎回同じ値が生成される。
          |
          | 鍵長の指定は必須である。
@@ -235,7 +303,7 @@ StringKeyGeneratorによる String 型の疑似乱数生成
 
   .. code-block:: java
 
-    public static void CreateStringKey() {
+    public static void createStringKey() {
         StringKeyGenerator generator = KeyGenerators.string(); // (1)
         System.out.println(generator.generateKey()); // (2)
         System.out.println(generator.generateKey()); //
@@ -249,7 +317,7 @@ StringKeyGeneratorによる String 型の疑似乱数生成
      * - 項番
        - 説明
      * - | (1)
-       - | 鍵 (疑似乱数) 生成器\ ``BytesKeyGenerator``\ のインスタンスを生成する。
+       - | 鍵 (疑似乱数) 生成器\ ``BytesKeyGenerator``\ オブジェクトのインスタンスを生成する。
          | この生成器で鍵を生成すると、毎回異なる値が生成される。
          |
          | 鍵長は指定できず、常に8バイトの鍵が生成される。
@@ -262,17 +330,17 @@ Appendix
 
 | Spring Securityでは公開鍵暗号化方式に関する機能は提供されていないため、Java、および、OpenSSL を利用した方法について説明する。
 
-Java APIでキーペアを生成し、Javaで暗 / 復号
+JCAでキーペアを生成し、Javaで暗 / 復号
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-| Java APIでキーペア(公開鍵 / 秘密鍵の組み合わせ)を生成し、公開鍵で暗号化、秘密鍵で復号処理を行う。
+| JCA (Java Cryptography Architecture)でキーペア(公開鍵 / 秘密鍵の組み合わせ)を生成し、公開鍵で暗号化、秘密鍵で復号処理を行う。
 
-Java APIによるキーペアの生成
+JCAによるキーペアの生成
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
   .. code-block:: java
 
-    public void generateKeysByJava() {
+    public void generateKeysByJCA() {
         try {
             KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");  // (1)
             generator.initialize(2048);                                        // (2)
@@ -384,7 +452,7 @@ Java APIによるキーペアの生成
 OpenSSLで作成したキーペアを利用してJavaで暗号化、OpenSSLで復号
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 | Cipherが同一であれば、公開鍵暗号化方式は別の方法で暗 / 復号を行なうことが可能である。
-| ここでは、OpenSSLを利用してあらかじめキーペアを作成しておき、その公開鍵を利用してJava APIによる暗号化を行なう。また、その秘密鍵を利用してOpenSSLで復号処理を行なう方法を説明する。
+| ここでは、OpenSSLを利用してあらかじめキーペアを作成しておき、その公開鍵を利用してJCAによる暗号化を行なう。また、その秘密鍵を利用してOpenSSLで復号処理を行なう方法を説明する。
 
 | 事前準備として、以下の処理を行う。
 
@@ -412,10 +480,10 @@ OpenSSLで作成したキーペアを利用してJavaで暗号化、OpenSSLで�
      * - | (3)
        - | 秘密鍵から公開鍵(DER形式)を生成する。
 
-Java APIによる暗号化、OpenSSLによる復号
+JCAによる暗号化、OpenSSLによる復号
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-| OpenSSLを利用してキーペアを作成済みであるため、Javaアプリケーションでは公開鍵の読み込み、および、その公開鍵を利用した暗号化処理を行なう。
+| OpenSSLを利用してキーペアを作成済みであるため、アプリケーションでは公開鍵の読み込み、および、その公開鍵を利用した暗号化処理を行なう。
 
   .. code-block:: java
 
@@ -428,10 +496,10 @@ Java APIによる暗号化、OpenSSLによる復号
 
             byte[] encrypted = encryptByPublicKey("Hello World!", publicKey);  // (3)
 
-            Files.write(Paths.get("encryptedByJava.txt"), encrypted);
+            Files.write(Paths.get("encryptedByJCA.txt"), encrypted);
             System.out.println("Please execute the following command:");
             System.out
-                    .println("openssl rsautl -decrypt -inkey hoge.pem -in encryptedByJava.txt");
+                    .println("openssl rsautl -decrypt -inkey hoge.pem -in encryptedByJCA.txt");
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         } catch (NoSuchAlgorithmException ignored) {
@@ -462,7 +530,7 @@ Java APIによる暗号化、OpenSSLによる復号
 
   .. code-block:: console
 
-     $ openssl rsautl -decrypt -inkey private.pem -in encryptedByJava.txt  # (1)
+     $ openssl rsautl -decrypt -inkey private.pem -in encryptedByJCA.txt  # (1)
 
   .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
   .. list-table::
@@ -508,10 +576,10 @@ OpenSSLで作成したキーペアを利用してOpenSSLで暗号化、Javaで�
      * - | (4)
        - | 公開鍵を利用してOpenSSLで暗号化する。
 
-OpenSSLによる暗号化、Java APIによる復号
+OpenSSLによる暗号化、JCAによる復号
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-| OpenSSLを利用してキーペアを作成済みであるため、Javaアプリケーションでは秘密鍵の読み込み、および、その秘密鍵を利用した復号処理を行なう。
+| OpenSSLを利用してキーペアを作成済みであるため、アプリケーションでは秘密鍵の読み込み、および、その秘密鍵を利用した復号処理を行なう。
 
   .. code-block:: java
 
