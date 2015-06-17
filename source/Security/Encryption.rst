@@ -391,7 +391,7 @@ JCAによるキーペアの生成
         try {
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding"); // (1)
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);                       // (2)
-            return cipher.doFinal(rawText.getBytes(Charset.forName("UTF-8"))); //
+            return cipher.doFinal(rawText.getBytes(StandardCharsets.UTF_8)); //
         } catch (NoSuchAlgorithmException | NoSuchPaddingException ignored) {
             throw new IllegalStateException("Should not be happened!", ignored);
         } catch (InvalidKeyException |
@@ -426,7 +426,7 @@ JCAによるキーペアの生成
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding"); // (1)
             cipher.init(Cipher.DECRYPT_MODE, privateKey);           // (2)
             byte[] decryptedBytes = cipher.doFinal(encryptedBytes); //
-            return new String(decryptedBytes, Charset.forName("UTF-8"));
+            return new String(decryptedBytes, StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException ignored) {
             throw new IllegalStateException("Should not be happened!", ignored);
         } catch (InvalidKeyException |
