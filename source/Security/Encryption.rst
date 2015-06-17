@@ -390,13 +390,13 @@ JCAによるキーペアの生成
     public byte[] encryptByPublicKey(String rawText, PublicKey publicKey) {
         try {
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding"); // (1)
-            cipher.init(Cipher.ENCRYPT_MODE, publicKey); // (2)
-            return cipher.doFinal(rawText.getBytes());   //
+            cipher.init(Cipher.ENCRYPT_MODE, publicKey);                       // (2)
+            return cipher.doFinal(rawText.getBytes(Charset.forName("UTF-8"))); //
         } catch (NoSuchAlgorithmException | NoSuchPaddingException ignored) {
             throw new IllegalStateException("Should not be happened!", ignored);
         } catch (InvalidKeyException |
-	         IllegalBlockSizeException |
-		 BadPaddingException e) {
+                 IllegalBlockSizeException |
+                 BadPaddingException e) {
             throw new IllegalArgumentException(e);
         }
     }
@@ -426,12 +426,12 @@ JCAによるキーペアの生成
             Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding"); // (1)
             cipher.init(Cipher.DECRYPT_MODE, privateKey);           // (2)
             byte[] decryptedBytes = cipher.doFinal(encryptedBytes); //
-            return new String(decryptedBytes);
+            return new String(decryptedBytes, Charset.forName("UTF-8"));
         } catch (NoSuchAlgorithmException | NoSuchPaddingException ignored) {
             throw new IllegalStateException("Should not be happened!", ignored);
         } catch (InvalidKeyException |
-	         IllegalBlockSizeException |
-		 BadPaddingException e) {
+                 IllegalBlockSizeException |
+                 BadPaddingException e) {
             throw new IllegalArgumentException(e);
         }
     }
