@@ -989,8 +989,8 @@ Acceptヘッダの設定
 
             log.warn("リトライ({}回目)", retryCount);
 
-        //...
-
+            //...
+        }
     }
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
