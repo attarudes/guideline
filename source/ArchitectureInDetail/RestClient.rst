@@ -1547,17 +1547,17 @@ Appendix
 
 .. _RestClientProxySettings:
 
-Proxyサーバの設定方法
+HTTP Proxyサーバの設定方法
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-サーバへアクセスする際にProxyサーバを経由する必要がある場は、以下のような実装となる。
+サーバへアクセスする際にHTTP Proxyサーバを経由する必要がある場は、以下のような実装となる。
 
-Proxyサーバの指定方法
+HTTP Proxyサーバの指定方法
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-Proxyサーバの指定は、システムプロパティに指定する。
+HTTP Proxyサーバの指定は、システムプロパティに指定する。
 
-**プログラム内でProxyサーバを指定する場合の実装例**
+**プログラム内でHTTP Proxyサーバを指定する場合の実装例**
 
 .. code-block:: java
 
@@ -1580,24 +1580,24 @@ Proxyサーバの指定は、システムプロパティに指定する。
     * - 項番
       - 説明
     * - | (1)
-      - | システムプロパティ「\ ``"http.proxyHost"``\ 」にProxyサーバのホスト名又はIPアドレスを設定する。
+      - | システムプロパティ「\ ``"http.proxyHost"``\ 」にHTTP Proxyサーバのホスト名又はIPアドレスを設定する。
     * - | (2)
-      - | システムプロパティ「\ ``"http.proxyPort"``\ 」にProxyサーバのポート番号を設定する。
-      - | Proxyサーバのポート番号
+      - | システムプロパティ「\ ``"http.proxyPort"``\ 」にHTTP Proxyサーバのポート番号を設定する。
+      - | HTTP Proxyサーバのポート番号
 
-**JVMの起動パラメータでProxyサーバを指定する場合の指定例**
+**JVMの起動パラメータでHTTP Proxyサーバを指定する場合の指定例**
 
 .. code-block:: console
 
     java -Dhttps.proxyHost={host name or ip address} -Dhttps.proxyPort={port number} ...
 
 
-Proxyサーバの資格情報の指定方法
+HTTP Proxyサーバの資格情報の指定方法
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-Proxyサーバにアクセスする際に資格情報(ユーザー名とパスワード)が必要な場合は、\ ``java.net.Authenticator``\ に資格情報を設定する。
+HTTP Proxyサーバにアクセスする際に資格情報(ユーザー名とパスワード)が必要な場合は、\ ``java.net.Authenticator``\ に資格情報を設定する。
 
-**Proxyサーバの資格情報の指定例**
+**HTTP Proxyサーバの資格情報の指定例**
 
 .. code-block:: java
 
@@ -1625,6 +1625,6 @@ Proxyサーバにアクセスする際に資格情報(ユーザー名とパス�
     * - 項番
       - 説明
     * - | (1)
-      - | \ ``Authenticator``\ の\ ``setDefault``\ メソッドを呼び出し、Proxyサーバの資格情報を返却する\ ``Authenticator``\ オブジェクトを設定する。
+      - | \ ``Authenticator``\ の\ ``setDefault``\ メソッドを呼び出し、HTTP Proxyサーバの資格情報を返却する\ ``Authenticator``\ オブジェクトを設定する。
     * - | (2)
-      - | \ ``getPasswordAuthentication``\ メソッドの返り値として、Proxyサーバの資格情報(ユーザー名とパスワード)を返却する。
+      - | \ ``getPasswordAuthentication``\ メソッドの返り値として、HTTP Proxyサーバの資格情報(ユーザー名とパスワード)を返却する。
