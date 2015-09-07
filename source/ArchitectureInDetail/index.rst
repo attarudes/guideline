@@ -22,6 +22,7 @@ TERASOLUNA Server Framework for Java (5.x)の機能詳細
    Codelist
    Ajax
    REST
+   RestClient
    FileUpload
    FileDownload
    TilesLayout
@@ -31,4 +32,3 @@ TERASOLUNA Server Framework for Java (5.x)の機能詳細
 .. raw:: latex
 
    \newpage
-
