@@ -410,8 +410,8 @@ GETリクエストの送信
 
 .. code-block:: java
 
-    @Autowired
-    private RestTemplate restTemplate;
+    @Inject
+    RestTemplate restTemplate;
 
     @Value("https://localhost:8080/")
     private URI uri;
@@ -484,8 +484,8 @@ HTTPステータスコード、レスポンスヘッダ、レスポンスボデ�
 
         //...
 
-        @Autowired
-        private RestTemplate restTemplate;
+        @Inject
+        RestTemplate restTemplate;
 
         @Value("http://localhost:8080/sample/api")
         private URI uri;
@@ -618,8 +618,8 @@ POSTした結果としてHTTPステータスコード、レスポンスヘッダ
 
     //...
 
-        @Autowired
-        private RestTemplate restTemplate;
+        @Inject
+        RestTemplate restTemplate;
 
         @Value("http://localhost:8080/sample/api")
         private URI uri;
