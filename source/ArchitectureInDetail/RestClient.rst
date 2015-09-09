@@ -1502,8 +1502,8 @@ Basic認証用のリクエストヘッダ設定処理
 
 .. code-block:: java
 
-    @Autowired
-    private AsyncRestTemplate asyncRestTemplate;
+    @Inject
+    AsyncRestTemplate asyncRestTemplate;
 
     //...
 
