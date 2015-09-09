@@ -413,7 +413,7 @@ GETリクエストの送信
     @Inject
     RestTemplate restTemplate;
 
-    @Value("https://localhost:8080/")
+    @Value("${api.url:http://localhost:8080/api}")
     URI uri;
 
     //...
@@ -487,7 +487,7 @@ HTTPステータスコード、レスポンスヘッダ、レスポンスボデ�
         @Inject
         RestTemplate restTemplate;
 
-        @Value("http://localhost:8080/sample/api")
+        @Value("${api.url:http://localhost:8080/api}")
         URI uri;
 
         //...
@@ -621,7 +621,7 @@ POSTした結果としてHTTPステータスコード、レスポンスヘッダ
         @Inject
         RestTemplate restTemplate;
 
-        @Value("http://localhost:8080/sample/api")
+        @Value("${api.url:http://localhost:8080/api}")
         URI uri;
 
         //...
@@ -1062,7 +1062,7 @@ HTTP接続と同様に、\ ``https``\ ではじまるURIを指定すればよい
 
 .. code-block:: java
 
-    @Value("https://api.github.com")
+    @Value("${api.url:https://api.github.com}")
     URI uri;
     
     //...
