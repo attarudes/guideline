@@ -414,7 +414,7 @@ GETリクエストの送信
     RestTemplate restTemplate;
 
     @Value("https://localhost:8080/")
-    private URI uri;
+    URI uri;
 
     //...
 
@@ -488,7 +488,7 @@ HTTPステータスコード、レスポンスヘッダ、レスポンスボデ�
         RestTemplate restTemplate;
 
         @Value("http://localhost:8080/sample/api")
-        private URI uri;
+        URI uri;
 
         //...
 
@@ -622,7 +622,7 @@ POSTした結果としてHTTPステータスコード、レスポンスヘッダ
         RestTemplate restTemplate;
 
         @Value("http://localhost:8080/sample/api")
-        private URI uri;
+        URI uri;
 
         //...
 
@@ -839,10 +839,10 @@ Acceptヘッダの設定
 .. code-block:: java
 
     @Value("${retry.max}")
-    private int retryMax;
+    int retryMax;
 
     @Value("${retry.interval.time}")
-    private int intervalTime;
+    int intervalTime;
 
     //...
 
@@ -1063,7 +1063,7 @@ HTTP接続と同様に、\ ``https``\ ではじまるURIを指定すればよい
 .. code-block:: java
 
     @Value("https://api.github.com")
-    private URI uri;
+    URI uri;
     
     //...
 
@@ -1114,10 +1114,10 @@ Basic認証
 
 
     @Value("${auth.userid}")
-    private String userid;
+    String userid;
 
     @Value("${auth.password}")
-    private String password;
+    String password;
 
         //...
 
@@ -1393,10 +1393,10 @@ Basic認証用のリクエストヘッダ設定処理
         private static final Logger log = LoggerFactory.getLogger(BasicAuthInterceptor.class);
 
         @Value("${auth.userid}")
-        private String userid;
+        String userid;
 
         @Value("${auth.password}")
-        private String password;
+        String password;
 
         @Override
         public ClientHttpResponse intercept(HttpRequest request, byte[] body,
@@ -1562,10 +1562,10 @@ HTTP Proxyサーバの指定は、システムプロパティに指定する。
 .. code-block:: java
 
     @Value("${proxy.host}")
-    private String proxyHost;
+    String proxyHost;
 
     @Value("${proxy.port}")
-    private String proxyPort;
+    String proxyPort;
   
     //...
 
@@ -1602,10 +1602,10 @@ HTTP Proxyサーバにアクセスする際に資格情報(ユーザー名とパ
 .. code-block:: java
 
     @Value("${auth.userid}")
-    private String userid;
+    String userid;
 
     @Value("${auth.password}")
-    private String password;
+    String password;
 
     //...
   
