@@ -485,10 +485,6 @@ HTTPステータスコード、レスポンスヘッダ、レスポンスボデ�
 
 .. code-block:: java
 
-    import java.net.URI;
-
-    import org.springframework.beans.factory.annotation.Autowired;
-    import org.springframework.beans.factory.annotation.Value;
     import org.springframework.http.RequestEntity;
     import org.springframework.http.ResponseEntity;
     import org.springframework.web.client.RestTemplate;
@@ -619,10 +615,6 @@ POSTした結果としてHTTPステータスコード、レスポンスヘッダ
 
 .. code-block:: java
 
-    import java.net.URI;
-
-    import org.springframework.beans.factory.annotation.Autowired;
-    import org.springframework.beans.factory.annotation.Value;
     import org.springframework.http.RequestEntity;
     import org.springframework.http.ResponseEntity;
     import org.springframework.web.client.RestTemplate;
@@ -918,8 +910,6 @@ Acceptヘッダの設定
 **エラーハンドラの実装クラスの作成例**
 
 .. code-block:: java
-
-    import java.io.IOException;
 
     import org.springframework.http.client.ClientHttpResponse;
     import org.springframework.web.client.DefaultResponseErrorHandler;
@@ -1324,10 +1314,6 @@ How to extend
 
     package com.example.restclient;
 
-    import java.io.IOException;
-
-    import org.slf4j.Logger;
-    import org.slf4j.LoggerFactory;
     import org.springframework.http.HttpRequest;
     import org.springframework.http.client.ClientHttpRequestExecution;
     import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -1390,10 +1376,6 @@ Basic認証用のリクエストヘッダ設定処理
 
     package com.example.restclient;
 
-    import java.io.IOException;
-
-    import org.slf4j.Logger;
-    import org.slf4j.LoggerFactory;
     import org.springframework.http.HttpRequest;
     import org.springframework.http.client.ClientHttpRequestExecution;
     import org.springframework.http.client.ClientHttpRequestInterceptor;
