@@ -922,6 +922,7 @@ Acceptヘッダの設定
             try {
                 Thread.sleep(waitTime);
             } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
             }
 
             log.warn("The number of retries：{} Times", retryCount);
@@ -1029,6 +1030,7 @@ Acceptヘッダの設定
             try {
                 Thread.sleep(waitTime);
             } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
             }
 
             log.warn("The number of retries：{} Times", retryCount);
