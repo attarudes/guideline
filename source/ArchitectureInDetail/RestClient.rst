@@ -1389,8 +1389,9 @@ How to extend
             ClientHttpResponse response = execution.execute(request, body); //(3)
           
             log.info("Response Header {}", response.getHeaders()); // (4)
+            log.info("Response Status Code {}", response.getStatusCode()); // (5)
 
-            return response; // (5)
+            return response; // (6)
         }
 
     }
@@ -1414,6 +1415,8 @@ How to extend
       - | レスポンスを受け取った後に行いたい共通処理を実装する。
         | 上記の実装例では、レスポンスヘッダの内容をログに出力している。
     * - | (5)
+      - | (4)と同様に、ステータスコードの内容をログに出力している。
+    * - | (6)
       - | (3)で受信したレスポンスをリターンする。
 
 
