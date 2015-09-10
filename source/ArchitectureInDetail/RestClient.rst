@@ -900,13 +900,13 @@ Acceptヘッダの設定
             responseEntity = restTemplate.exchange(requestEntity,
                     String.class);
 
-            log.info("正常終了({}) ", responseEntity.getStatusCode());
+            log.info("Success({}) ", responseEntity.getStatusCode());
 
             break;
 
         } catch (HttpServerErrorException e) { // (1)
 
-            log.warn("サーバでエラー（{}）が発生しました", e.getStatusCode(),
+            log.warn("An error ({}) occurred on the server", e.getStatusCode(),
                     retryCount);
 
             if (retryCount == retryMax) {
@@ -922,7 +922,7 @@ Acceptヘッダの設定
             } catch (InterruptedException ie) {
             }
 
-            log.warn("リトライ({}回目)", retryCount);
+            log.warn("The number of retries：{} Times", retryCount);
 
         //...
 
@@ -959,7 +959,7 @@ Acceptヘッダの設定
 
         @Override
         public void handleError(ClientHttpResponse response) throws IOException {
-            //例外をスローしない。
+            //Don't throw Exception.
         }
 
     }
@@ -1029,7 +1029,7 @@ Acceptヘッダの設定
             } catch (InterruptedException ie) {
             }
 
-            log.warn("リトライ({}回目)", retryCount);
+            log.warn("The number of retries：{} Times", retryCount);
 
             //...
         }
@@ -1058,7 +1058,6 @@ Acceptヘッダの設定
 
 .. code-block:: xml
 
-    <!-- 接続タイムアウトと読み込みタイムアウトの設定 -->
     <bean id="clientHttpRequestFactory"
           class="org.springframework.http.client.SimpleClientHttpRequestFactory">
         <property name="connectTimeout" value="${api.connectTimeout: 2000}" /><!-- (1) -->
@@ -1378,12 +1377,12 @@ How to extend
 
             String requestBody = new String(body);
 
-            log.info("リクエストヘッダ {}", request.getHeaders()); //(2)
-            log.info("リクエストボディ {}", requestBody);
+            log.info("Request Header {}", request.getHeaders()); //(2)
+            log.info("Request Body {}", requestBody);
 
             ClientHttpResponse response = execution.execute(request, body); //(3)
           
-            log.info("レスポンスヘッダ {}", response.getHeaders()); // (4)
+            log.info("Response Header {}", response.getHeaders()); // (4)
 
             return response; // (5)
         }
