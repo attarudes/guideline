@@ -832,7 +832,7 @@ Acceptヘッダの設定
 
     RequestEntity<User> requestEntity = RequestEntity
             .post(uri)
-            .header("Authorization", "Basic " + base64Creds) // (1)
+            .header("Authorization", "Basic " + base64Credentials) // (1)
             .body(user);
 
 
@@ -1174,12 +1174,12 @@ Basic認証
 
 .. code-block:: java
 
-    String plainCreds = userid + ":" + password; // (1)
-    String base64Creds = Base64.getEncoder().encodeToString(plainCreds.getBytes()); // (2)
+    String plainCredentials = userid + ":" + password; // (1)
+    String base64Credentials = Base64.getEncoder().encodeToString(plainCredentials.getBytes()); // (2)
 
     RequestEntity requestEntity = RequestEntity
           .get(uri)
-          .header("Authorization", "Basic " + base64Creds) // (3)
+          .header("Authorization", "Basic " + base64Credentials) // (3)
           .build();
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -1446,9 +1446,9 @@ Basic認証用のリクエストヘッダ設定処理
         public ClientHttpResponse intercept(HttpRequest request, byte[] body,
                 ClientHttpRequestExecution execution) throws IOException {
           
-            String plainCreds = userid + ":" + password;
-            String base64Creds = Base64.getEncoder().encodeToString(plainCreds.getBytes());
-            request.getHeaders().add("Authorization", "Basic " + base64Creds); // (1)
+            String plainCredentials = userid + ":" + password;
+            String base64Credentials = Base64.getEncoder().encodeToString(plainCredentials.getBytes());
+            request.getHeaders().add("Authorization", "Basic " + base64Credentials); // (1)
 
             ClientHttpResponse response = execution.execute(request, body);
           
