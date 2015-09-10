@@ -447,6 +447,9 @@ HTTPステータスコード、レスポンスヘッダ、レスポンスボデ�
 
     ResponseEntity<User> responseEntity =
             restTemplate.getForEntity(uri, User.class); // (1)
+    HttpStatus statusCode = responseEntity.getStatusCode(); // (2)
+    HttpHeaders header = responseEntity.getHeaders(); // (3)
+    String body = responseEntity.getBody(); // (4)
 
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -459,6 +462,12 @@ HTTPステータスコード、レスポンスヘッダ、レスポンスボデ�
     * - | (1)
       - | ``getForEntity``\ メソッドを使用した場合は、戻り値は\ ``org.springframework.http.ResponseEntity``\ となる。
         | レスポンスボディの値は\ ``ResponseEntity``\ から取得する。
+    * - | (2)
+      - | HTTPステータスコードは\ ``getStatusCode``\ メソッドを用いて取得する。
+    * - | (3)
+      - | レスポンスヘッダは\ ``getHeaders``\ メソッドを用いて取得する。
+    * - | (4)
+      - | レスポンスボディは\ ``getBody``\ メソッドを用いて取得する。
 
 .. note:: **ResponseEntityとは**
 
