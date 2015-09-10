@@ -408,6 +408,8 @@ GETリクエストの送信
 
 **getForObjectメソッドの使用例**
 
+フィールド宣言部
+
 .. code-block:: java
 
     @Inject
@@ -416,11 +418,17 @@ GETリクエストの送信
     @Value("${api.url:http://localhost:8080/api}")
     URI uri;
 
-    //...
+.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+.. list-table::
+    :header-rows: 1
+    :widths: 10 90
 
-        User user =
-                restTemplate.getForObject(uri, User.class); // (1)
+メソッド内部
 
+.. code-block:: java
+
+    User user =
+        restTemplate.getForObject(uri, User.class); // (1)
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
 .. list-table::
@@ -483,32 +491,46 @@ HTTPステータスコード、レスポンスヘッダ、レスポンスボデ�
 
 **exchangeメソッドの使用例**
 
+import部
+
 .. code-block:: java
 
     import org.springframework.http.RequestEntity;
     import org.springframework.http.ResponseEntity;
     import org.springframework.web.client.RestTemplate;
 
-        //...
+.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+.. list-table::
+    :header-rows: 1
+    :widths: 10 90
 
-        @Inject
-        RestTemplate restTemplate;
+フィールド宣言部
 
-        @Value("${api.url:http://localhost:8080/api}")
-        URI uri;
+.. code-block:: java
 
-        //...
+    @Inject
+    RestTemplate restTemplate;
 
-            RequestEntity requestEntity = RequestEntity
-                    .get(uri)//(1)
-                    .build();//(2)
+    @Value("${api.url:http://localhost:8080/api}")
+    URI uri;
 
-            ResponseEntity<User> responseEntity =
-                    restTemplate.exchange(requestEntity, User.class);//(3)
+.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+.. list-table::
+    :header-rows: 1
+    :widths: 10 90
 
-            User user = responseEntity.getBody();//(4)
+メソッド内部
 
+.. code-block:: java
 
+    RequestEntity requestEntity = RequestEntity
+            .get(uri)//(1)
+            .build();//(2)
+
+    ResponseEntity<User> responseEntity =
+            restTemplate.exchange(requestEntity, User.class);//(3)
+
+    User user = responseEntity.getBody();//(4)
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
 .. list-table::
@@ -613,34 +635,48 @@ POSTした結果としてHTTPステータスコード、レスポンスヘッダ
 
 **exchangeメソッドの使用例**
 
+import部
+
 .. code-block:: java
 
     import org.springframework.http.RequestEntity;
     import org.springframework.http.ResponseEntity;
     import org.springframework.web.client.RestTemplate;
 
+.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+.. list-table::
+    :header-rows: 1
+    :widths: 10 90
+
+フィールド宣言部
+
+.. code-block:: java
+
+    @Inject
+    RestTemplate restTemplate;
+
+    @Value("${api.url:http://localhost:8080/api}")
+    URI uri;
+
+.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+.. list-table::
+    :header-rows: 1
+    :widths: 10 90
+
+メソッド内部
+
+.. code-block:: java
+
+    User user = new User();
+
     //...
 
-        @Inject
-        RestTemplate restTemplate;
+    RequestEntity<User> requestEntity = RequestEntity//(1)
+            .post(uri)//(2)
+            .body(user);//(3)
 
-        @Value("${api.url:http://localhost:8080/api}")
-        URI uri;
-
-        //...
-
-            User user = new User();
-
-            //...
-
-            RequestEntity<User> requestEntity = RequestEntity//(1)
-                    .post(uri)//(2)
-                    .body(user);//(3)
-
-            ResponseEntity<User> responseEntity =
-                    restTemplate.exchange(requestEntity, User.class);//(4)
-
-
+    ResponseEntity<User> responseEntity =
+            restTemplate.exchange(requestEntity, User.class);//(4)
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
 .. list-table::
@@ -839,6 +875,8 @@ Acceptヘッダの設定
 
     アプリケーションの要件に応じて\ **適切な例外ハンドリングを行うこと。**\
 
+フィールド宣言部
+
 .. code-block:: java
 
     @Value("${retry.max}")
@@ -847,45 +885,50 @@ Acceptヘッダの設定
     @Value("${retry.interval.time}")
     int intervalTime;
 
-    //...
+.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+.. list-table::
+    :header-rows: 1
+    :widths: 10 90
 
-        int retryCount = 0;
-        int waitTime = 0;
-        while (true) {
+メソッド内部
+
+.. code-block:: java
+
+    int retryCount = 0;
+    int waitTime = 0;
+    while (true) {
+        try {
+
+            responseEntity = restTemplate.exchange(requestEntity,
+                    String.class);
+
+            log.info("正常終了({}) ", responseEntity.getStatusCode());
+
+            break;
+
+        } catch (HttpServerErrorException e) { // (1)
+
+            log.warn("サーバでエラー（{}）が発生しました", e.getStatusCode(),
+                    retryCount);
+
+            if (retryCount == retryMax) {
+                throw e;
+            }
+
+            retryCount = retryCount + 1;
+
+            waitTime = intervalTime * retryCount;
+
             try {
+                Thread.sleep(waitTime);
+            } catch (InterruptedException ie) {
+            }
 
-                responseEntity = restTemplate.exchange(requestEntity,
-                        String.class);
+            log.warn("リトライ({}回目)", retryCount);
 
-                log.info("正常終了({}) ", responseEntity.getStatusCode());
+        //...
 
-                break;
-
-            } catch (HttpServerErrorException e) { // (1)
-
-                log.warn("サーバでエラー（{}）が発生しました", e.getStatusCode(),
-                        retryCount);
-
-                if (retryCount == retryMax) {
-                    throw e;
-                }
-
-                retryCount = retryCount + 1;
-
-                waitTime = intervalTime * retryCount;
-
-                try {
-                    Thread.sleep(waitTime);
-                } catch (InterruptedException ie) {
-                }
-
-                log.warn("リトライ({}回目)", retryCount);
-
-            //...
-
-        }
-
-
+    }
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
 .. list-table::
@@ -1111,6 +1154,8 @@ Basic認証
 
 **Basic認証の実装例**
 
+フィールド宣言部
+
 .. code-block:: java
 
 
@@ -1120,16 +1165,22 @@ Basic認証
     @Value("${auth.password}")
     String password;
 
-        //...
+.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+.. list-table::
+    :header-rows: 1
+    :widths: 10 90
 
-        String plainCreds = userid + ":" + password; // (1)
-        String base64Creds = Base64.getEncoder().encodeToString(plainCreds.getBytes()); // (2)
+メソッド内部
 
-        RequestEntity requestEntity = RequestEntity
-              .get(uri)
-              .header("Authorization", "Basic " + base64Creds) // (3)
-              .build();
+.. code-block:: java
 
+    String plainCreds = userid + ":" + password; // (1)
+    String base64Creds = Base64.getEncoder().encodeToString(plainCreds.getBytes()); // (2)
+
+    RequestEntity requestEntity = RequestEntity
+          .get(uri)
+          .header("Authorization", "Basic " + base64Creds) // (3)
+          .build();
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
 .. list-table::
@@ -1493,27 +1544,36 @@ Basic認証用のリクエストヘッダ設定処理
 
 **非同期リクエストの実装例**
 
+フィールド宣言部
+
 .. code-block:: java
 
     @Inject
     AsyncRestTemplate asyncRestTemplate;
 
-    //...
+.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+.. list-table::
+    :header-rows: 1
+    :widths: 10 90
 
-        ListenableFuture<ResponseEntity<User>> responseEntity =
-                asyncRestTemplate.getForEntity(uri, User.class); // (1)
+メソッド内部
 
-        responseEntity.addCallback(new ListenableFutureCallback<ResponseEntity<User>>() { // (2)
-            @Override
-            public void onSuccess(ResponseEntity<User> entity) {
-                //...
-            }
+.. code-block:: java
 
-            @Override
-            public void onFailure(Throwable t) {
-              //...
-            }
-        });
+    ListenableFuture<ResponseEntity<User>> responseEntity =
+            asyncRestTemplate.getForEntity(uri, User.class); // (1)
+
+    responseEntity.addCallback(new ListenableFutureCallback<ResponseEntity<User>>() { // (2)
+        @Override
+        public void onSuccess(ResponseEntity<User> entity) {
+            //...
+        }
+
+        @Override
+        public void onFailure(Throwable t) {
+          //...
+        }
+    });
 
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
