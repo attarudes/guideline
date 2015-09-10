@@ -1379,10 +1379,12 @@ How to extend
         public ClientHttpResponse intercept(HttpRequest request, byte[] body,
                 ClientHttpRequestExecution execution) throws IOException {
 
-            String requestBody = new String(body);
+            if (log.isInfoEnabled) {
+                String requestBody = new String(body);
 
-            log.info("Request Header {}", request.getHeaders()); //(2)
-            log.info("Request Body {}", requestBody);
+                log.info("Request Header {}", request.getHeaders()); //(2)
+                log.info("Request Body {}", requestBody);
+            }
 
             ClientHttpResponse response = execution.execute(request, body); //(3)
           
