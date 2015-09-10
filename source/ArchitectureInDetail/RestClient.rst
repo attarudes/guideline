@@ -906,7 +906,7 @@ Acceptヘッダの設定
 
         } catch (HttpServerErrorException e) { // (1)
 
-            log.warn("An error ({}) occurred on the server", e.getStatusCode(),
+            log.warn("An error ({}) occurred on the server. (The number of retries：{} Times)", e.getStatusCode(),
                     retryCount);
 
             if (retryCount == retryMax) {
