@@ -878,7 +878,7 @@ Acceptヘッダの設定
 .. code-block:: java
 
     @Value("${retry.max}")
-    int retryMax;
+    int retryMaxCount;
 
     @Value("${retry.interval.time}")
     int intervalTime;
@@ -911,7 +911,7 @@ Acceptヘッダの設定
                     retryCount);
             }
 
-            if (retryCount == retryMax) {
+            if (retryCount == retryMaxCount) {
                 throw e;
             }
 
@@ -1019,7 +1019,7 @@ Acceptヘッダの設定
 
         } else if (responseEntity.getStatusCode() == HttpStatus.SERVICE_UNAVAILABLE) { // (2)
 
-            if (retryCount == retryMax) {
+            if (retryCount == retryMaxCount) {
                 break;
             }
 
