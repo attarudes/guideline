@@ -915,7 +915,7 @@ Acceptヘッダの設定
                 throw e;
             }
 
-            retryCount = retryCount++;
+            retryCount++;
 
             waitTime = intervalTime * retryCount;
 
@@ -1023,7 +1023,7 @@ Acceptヘッダの設定
                 break;
             }
 
-            retryCount = retryCount++;
+            retryCount++;
 
             waitTime = intervalTime * retryCount;
 
