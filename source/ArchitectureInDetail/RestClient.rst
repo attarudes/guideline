@@ -280,7 +280,7 @@ Spring Frameworkが提供するHTTPクライアントである。
 .. note:: **ClientHttpRequestInterceptorの動作仕様**
 
     \ ``ClientHttpRequestInterceptor``\ は複数適用することができ、指定した順番でチェーン実行される。
-    これサーブレットフィルタの動作によく似ており、最後に実行されるチェーン先として\ ``ClientHttpRequest``\ によるHTTP通信処理が登録されている。
+    これはサーブレットフィルタの動作によく似ており、最後に実行されるチェーン先として\ ``ClientHttpRequest``\ によるHTTP通信処理が登録されている。
     例えば、ある条件に一致した際にサーバとの通信処理をキャンセルしたいという要件があった場合は、チェーン先を呼びださなければよい。
 
     この仕組みを活用すると、
@@ -418,17 +418,12 @@ GETリクエストの送信
     @Value("${api.url:http://localhost:8080/api}")
     URI uri;
 
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-    :header-rows: 1
-    :widths: 10 90
 
 メソッド内部
 
 .. code-block:: java
 
-    User user =
-        restTemplate.getForObject(uri, User.class); // (1)
+    User user = restTemplate.getForObject(uri, User.class); // (1)
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
 .. list-table::
@@ -497,10 +492,6 @@ import部
     import org.springframework.http.ResponseEntity;
     import org.springframework.web.client.RestTemplate;
 
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-    :header-rows: 1
-    :widths: 10 90
 
 フィールド宣言部
 
@@ -512,10 +503,6 @@ import部
     @Value("${api.url:http://localhost:8080/api}")
     URI uri;
 
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-    :header-rows: 1
-    :widths: 10 90
 
 メソッド内部
 
@@ -580,8 +567,7 @@ POSTした結果としてレスポンスボディのみ取得できればよい�
 
     //...
 
-    User user =
-            restTemplate.postForObject(uri, user, User.class); // (1)
+    User user = restTemplate.postForObject(uri, user, User.class); // (1)
 
 
 .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
@@ -641,10 +627,6 @@ import部
     import org.springframework.http.ResponseEntity;
     import org.springframework.web.client.RestTemplate;
 
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-    :header-rows: 1
-    :widths: 10 90
 
 フィールド宣言部
 
@@ -656,10 +638,6 @@ import部
     @Value("${api.url:http://localhost:8080/api}")
     URI uri;
 
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-    :header-rows: 1
-    :widths: 10 90
 
 メソッド内部
 
@@ -883,10 +861,6 @@ Acceptヘッダの設定
     @Value("${retry.interval.time}")
     int intervalTime;
 
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-    :header-rows: 1
-    :widths: 10 90
 
 メソッド内部
 
@@ -897,8 +871,7 @@ Acceptヘッダの設定
     while (true) {
         try {
 
-            responseEntity = restTemplate.exchange(requestEntity,
-                    String.class);
+            responseEntity = restTemplate.exchange(requestEntity, String.class);
 
             log.info("Success({}) ", responseEntity.getStatusCode());
 
@@ -1166,10 +1139,6 @@ Basic認証
     @Value("${auth.password}")
     String password;
 
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-    :header-rows: 1
-    :widths: 10 90
 
 メソッド内部
 
@@ -1557,10 +1526,6 @@ Basic認証用のリクエストヘッダ設定処理
     @Inject
     AsyncRestTemplate asyncRestTemplate;
 
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-    :header-rows: 1
-    :widths: 10 90
 
 メソッド内部
 
