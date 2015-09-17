@@ -1509,6 +1509,52 @@ Basic認証用のリクエストヘッダ設定処理
       - 説明
     * - | (1)
       - | \ ``AsyncRestTemplate``\ をデフォルト設定のまま利用する場合は、デフォルトコンストラクタを使用してbeanを登録する。
+        | デフォルト設定の場合、\ ``AsyncRestTemplate``\ の\ ``AsyncClientHttpRequestFactory``\ には、\ ``AsyncListenableTaskExecutor``\ として\ ``SimpleAsyncTaskExecutor``\ が設定された \ ``SimpleClientHttpRequestFactory``\ が設定される。
+
+.. note:: **AsyncRestTemplateのカスタマイズ方法**
+
+    デフォルトで設定される\ ``SimpleAsyncTaskExecutor``\ は、スレッドプールを使わずにスレッドを生成しており、
+    スレッドの同時実行数に制限は無い。
+    そのため、システムの特性を考慮したうえで、スレッドの同時実行数が多くなる見込みがある場合は、
+    \ ``ThreadPoolTaskExecutor``\ 等の利用を考慮されたい。
+    
+    タスク実行処理をカスタマイズする場合は、以下のようなbean定義となる。
+
+     .. code-block:: xml
+
+        <!-- (1) -->
+        <bean id="asyncTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+            <property name="maxPoolSize" value="5" />
+        </bean>
+
+        <!-- (2) -->
+        <bean id="asyncRestTemplate" class="org.springframework.web.client.AsyncRestTemplate" >
+            <constructor-arg index="0" ref="asyncTaskExecutor" />
+        </bean>
+
+
+     .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+     .. list-table::
+        :header-rows: 1
+        :widths: 10 90
+
+        * - 項番
+          - 説明
+        * - | (1)
+          - | \ ``AsyncTaskExecutor``\ のbean定義を行う。
+            | \ ``ThreadPoolTaskExecutor``\ を使うことで、スレッドプールを使ったスレッド運用が行われる。
+            | また、\ ``maxPoolSize``\ プロパティを設定することで、スレッド数の制御が行える。
+        * - | (2)
+          - | \ ``AsyncRestTemplate``\ のbean定義を行う。
+            | \ ``ThreadPoolTaskExecutor``\ を引数に指定するコンストラクタを使用してbeanを登録する。
+
+    本ガイドラインでは、タスク実行処理をカスタマイズする実装例のみを紹介するが、
+    \ ``AsyncRestTemplate``\は、HTTP通信処理もカスタマイズ出来る。
+    詳細は\ `AsyncRestTemplate <http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/client/AsyncRestTemplate.html>`_\ のJavadocを参照されたい。
+    
+    また、\ ``ThreadPoolTaskExecutor``\ についても、スレッドプールサイズ以外のカスタマイズが出来る。
+    詳細は\ `ThreadPoolTaskExecutor <http://docs.spring.io/spring/docs/4.1.7.RELEASE/javadoc-api/org/springframework/scheduling/concurrent/ThreadPoolTaskExecutor.html>`_\ のJavadocを参照されたい。
+
 
 
 .. _RestClientAsyncImplementation:
