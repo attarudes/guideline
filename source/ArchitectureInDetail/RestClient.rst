@@ -434,7 +434,7 @@ GETリクエストの送信
       - 説明
     * - | (1)
       - | ``getForObject``\ メソッドを使用した場合は、戻り値はレスポンスボディの値になる。
-      - | レスポンスボディのデータは\ ``HttpMessageConverter``\ によって第2引数に指定したJavaクラスへ変換された後、返却される。
+        | レスポンスボディのデータは\ ``HttpMessageConverter``\ によって第2引数に指定したJavaクラスへ変換された後、返却される。
 
 
 \ ``getForEntity``\ メソッドを使用した実装
@@ -525,10 +525,10 @@ import部
     * - 項番
       - 説明
     * - | (1)
-      - | ``RequestEntity``\ のgetメソッドを使用し、GETリクエスト用のリクエストビルダを生成する。
+      - | ``RequestEntity``\ の\ ``get``\メソッドを使用し、GETリクエスト用のリクエストビルダを生成する。
         | パラメータにURIを設定する。
     * - | (2)
-      - | ``RequestEntity.HeadersBuilder``\ のbuildメソッドを使用し、\ ``RequestEntity``\ オブジェクトを作成する。
+      - | ``RequestEntity.HeadersBuilder``\ の\ ``build``\メソッドを使用し、\ ``RequestEntity``\ オブジェクトを作成する。
     * - | (3)
       - | ``exchange``\ メソッドを使用し、リクエストを送信する。第二引数に、レスポンスデータの型を指定する。
         | レスポンスは、\ ``ResponseEntity<T>``\ になる。型パラメータに、レスポンスデータの型を設定する。
@@ -579,6 +579,7 @@ POSTした結果としてレスポンスボディのみ取得できればよい�
       - 説明
     * - | (1)
       - | ``postForObject``\ メソッドは、簡易にPOSTリクエストを実装できる。
+        | 第二引数には、``HttpMessageConverter``\ によってリクエストボディに変換されるJavaオブジェクトを設定する。
         | ``postForObject``\ メソッドを使用した場合は、戻り値はレスポンスボディの値になる。
 
 \ ``postForEntity``\ メソッドを使用した実装
@@ -700,9 +701,9 @@ import部
     * - 項番
       - 説明
     * - | (1)
-      - | ``ResponseEntity``\ の型パラメータにList<レスポンスデータの型>を指定する。
+      - | ``ResponseEntity``\ の型パラメータに\ ``List``\<レスポンスデータの型>を指定する。
     * - | (2)
-      - | ``exchange``\ メソッドの第二引数に\ ``org.springframework.core.ParameterizedTypeReference``\ のインスタンスを指定し、型パラメータにList<レスポンスデータの型>を指定する。
+      - | ``exchange``\ メソッドの第二引数に\ ``org.springframework.core.ParameterizedTypeReference``\ のインスタンスを指定し、型パラメータに\ ``List``\<レスポンスデータの型>を指定する。
     * - | (2)
       - | ``getBody``\ メソッドで、レスポンスボディのデータを取得する。
 
@@ -855,11 +856,11 @@ Acceptヘッダの設定
 
 .. code-block:: java
 
-    @Value("${retry.max}")
+    @Value("${retry.maxCount}")
     int retryMaxCount;
 
-    @Value("${retry.interval.time}")
-    int intervalTime;
+    @Value("${retry.waitTimeCoefficient}")
+    int waitTimeCoefficient;
 
 
 メソッド内部
@@ -867,7 +868,6 @@ Acceptヘッダの設定
 .. code-block:: java
 
     int retryCount = 0;
-    int waitTime = 0;
     while (true) {
         try {
 
@@ -890,15 +890,13 @@ Acceptヘッダの設定
 
             retryCount++;
 
-            waitTime = intervalTime * retryCount;
-
             try {
-                Thread.sleep(waitTime);
+                Thread.sleep(waitTimeCoefficient * retryCount);
             } catch (InterruptedException ie) {
                 Thread.currentThread().interrupt();
             }
 
-            log.warn("The number of retries：{} Times", retryCount);
+            log.info("The number of retries：{} Times", retryCount);
 
         //...
 
@@ -981,7 +979,6 @@ Acceptヘッダの設定
 .. code-block:: java
 
     int retryCount = 0;
-    int waitTime = 0;
     while (true) {
 
         responseEntity = restTemplate.exchange(requestEntity, User.class);
@@ -998,15 +995,13 @@ Acceptヘッダの設定
 
             retryCount++;
 
-            waitTime = intervalTime * retryCount;
-
             try {
-                Thread.sleep(waitTime);
+                Thread.sleep(waitTimeCoefficient * retryCount);
             } catch (InterruptedException ie) {
                 Thread.currentThread().interrupt();
             }
 
-            log.warn("The number of retries：{} Times", retryCount);
+            log.info("The number of retries：{} Times", retryCount);
 
             //...
         }
@@ -1588,7 +1583,7 @@ HTTP Proxyサーバの指定は、システムプロパティに指定する。
     @Value("${proxy.host}")
     String proxyHost;
 
-    @Value("${proxy.port}")
+    @Value("${proxy.portNum}")
     String proxyPort;
   
     //...
@@ -1607,7 +1602,7 @@ HTTP Proxyサーバの指定は、システムプロパティに指定する。
       - | システムプロパティ「\ ``"http.proxyHost"``\ 」にHTTP Proxyサーバのホスト名又はIPアドレスを設定する。
     * - | (2)
       - | システムプロパティ「\ ``"http.proxyPort"``\ 」にHTTP Proxyサーバのポート番号を設定する。
-      - | HTTP Proxyサーバのポート番号
+        | HTTP Proxyサーバのポート番号
 
 **JVMの起動パラメータでHTTP Proxyサーバを指定する場合の指定例**
 
