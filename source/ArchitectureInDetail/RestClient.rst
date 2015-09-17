@@ -873,16 +873,13 @@ Acceptヘッダの設定
 
             responseEntity = restTemplate.exchange(requestEntity, String.class);
 
-            log.info("Success({}) ", responseEntity.getStatusCode());
+            if (log.isInfoEnabled()) {
+                log.info("Success({}) ", responseEntity.getStatusCode());
+            }
 
             break;
 
         } catch (HttpServerErrorException e) { // (1)
-
-            if (log.isWarnEnabled()) {
-                log.warn("An error ({}) occurred on the server. (The number of retries：{} Times)", e.getStatusCode(),
-                    retryCount);
-            }
 
             if (retryCount == retryMaxCount) {
                 throw e;
@@ -890,13 +887,16 @@ Acceptヘッダの設定
 
             retryCount++;
 
+            if (log.isWarnEnabled()) {
+                log.warn("An error ({}) occurred on the server. (The number of retries：{} Times)", e.getStatusCode(),
+                    retryCount);
+            }
+
             try {
                 Thread.sleep(waitTimeCoefficient * retryCount);
             } catch (InterruptedException ie) {
                 Thread.currentThread().interrupt();
             }
-
-            log.info("The number of retries：{} Times", retryCount);
 
         //...
 
@@ -1140,7 +1140,8 @@ Basic認証
 .. code-block:: java
 
     String plainCredentials = userid + ":" + password; // (1)
-    String base64Credentials = Base64.getEncoder().encodeToString(plainCredentials.getBytes()); // (2)
+    String base64Credentials = Base64.getEncoder()
+            .encodeToString(plainCredentials.getBytes(StandardCharsets.UTF_8)); // (2)
 
     RequestEntity requestEntity = RequestEntity
           .get(uri)
@@ -1343,8 +1344,8 @@ How to extend
         public ClientHttpResponse intercept(HttpRequest request, byte[] body,
                 ClientHttpRequestExecution execution) throws IOException {
 
-            if (log.isInfoEnabled) {
-                String requestBody = new String(body);
+            if (log.isInfoEnabled()) {
+                String requestBody = new String(body, StandardCharsets.UTF_8);
 
                 log.info("Request Header {}", request.getHeaders()); //(2)
                 log.info("Request Body {}", requestBody);
@@ -1352,8 +1353,10 @@ How to extend
 
             ClientHttpResponse response = execution.execute(request, body); //(3)
           
-            log.info("Response Header {}", response.getHeaders()); // (4)
-            log.info("Response Status Code {}", response.getStatusCode()); // (5)
+            if (log.isInfoEnabled()) {
+                log.info("Response Header {}", response.getHeaders()); // (4)
+                log.info("Response Status Code {}", response.getStatusCode()); // (5)
+            }
 
             return response; // (6)
         }
@@ -1417,7 +1420,8 @@ Basic認証用のリクエストヘッダ設定処理
                 ClientHttpRequestExecution execution) throws IOException {
           
             String plainCredentials = userid + ":" + password;
-            String base64Credentials = Base64.getEncoder().encodeToString(plainCredentials.getBytes());
+            String base64Credentials = Base64.getEncoder()
+                    .encodeToString(plainCredentials.getBytes(StandardCharsets.UTF_8));
             request.getHeaders().add("Authorization", "Basic " + base64Credentials); // (1)
 
             ClientHttpResponse response = execution.execute(request, body);
