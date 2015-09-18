@@ -1511,6 +1511,13 @@ Basic認証用のリクエストヘッダ設定処理
       - | \ ``AsyncRestTemplate``\ をデフォルト設定のまま利用する場合は、デフォルトコンストラクタを使用してbeanを登録する。
         | デフォルト設定の場合、\ ``AsyncRestTemplate``\ の\ ``AsyncClientHttpRequestFactory``\ には、\ ``AsyncListenableTaskExecutor``\ として\ ``SimpleAsyncTaskExecutor``\ が設定された \ ``SimpleClientHttpRequestFactory``\ が設定される。
 
+
+.. note:: **AsyncRestTemplateへのClientHttpRequestInterceptorの適用について**
+
+    \ ``AsyncRestTemplate``\ には \ ``ClientHttpRequestInterceptor``\ を適用出来ない。
+    したがって、共通処理等は独自に実装する必要がある。
+
+
 .. note:: **AsyncRestTemplateのカスタマイズ方法**
 
     デフォルトで設定される\ ``SimpleAsyncTaskExecutor``\ は、スレッドプールを使わずにスレッドを生成しており、
