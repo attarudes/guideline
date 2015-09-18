@@ -1674,14 +1674,14 @@ HTTP Proxyサーバにアクセスする際に資格情報(ユーザー名とパ
     String userid;
 
     @Value("${auth.password}")
-    String password;
+    char[] password;
 
     //...
   
     Authenticator.setDefault(new Authenticator() { // (1)
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(userid, password.toCharArray()); // (2)
+                    return new PasswordAuthentication(userid, password); // (2)
                 }
     });
 
