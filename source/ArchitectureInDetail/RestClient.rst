@@ -1220,6 +1220,87 @@ Basic認証
 
 
 
+.. _RestClientHowToUseRestFull:
+
+RESTfulなURL(URIテンプレート)を扱う方法と実装例
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+RESTfulなURLを扱うには、URIテンプレートを使用して実装を行えばよい。
+
+**getForObjectメソッドでの使用例**
+
+フィールド宣言部
+
+.. code-block:: java
+
+    @Inject
+    RestTemplate restTemplate;
+
+    @Value("http://localhost:8080/api/{userId}") // (1)
+    String uriStr;
+
+
+メソッド内部
+
+.. code-block:: java
+
+    User user = restTemplate.getForObject(uriStr, User.class, "0001"); // (2)
+
+.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+.. list-table::
+    :header-rows: 1
+    :widths: 10 90
+
+    * - 項番
+      - 説明
+    * - | (1)
+      - | URIテンプレートの変数{userId}は、``RestTeamplate``\の使用時に指定の値に変換される。
+    * - | (2)
+      - | URIテンプレートの変数1つ目が ``getForObject``\ メソッドの第3引数に指定した値で置換され、『http://localhost:8080/api/0001』として処理される。
+
+
+**exchangeメソッドでの使用例**
+
+.. code-block:: java
+
+    @Inject
+    RestTemplate restTemplate;
+
+    @Value("http://localhost:8080/api/{action}") // (1)
+    String uriStr;
+
+
+メソッド内部
+
+.. code-block:: java
+
+    URI targetUri = UriComponentsBuilder.fromUriString(uriStr).
+            buildAndExpand("create").toUri(); //(2)
+
+    User user = new User();
+
+    //...
+
+    RequestEntity<User> requestEntity = RequestEntity
+            .post(targetUri)
+            .body(user);
+
+    ResponseEntity<User> responseEntity = restTemplate.exchange(requestEntity, User.class);
+
+
+.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+.. list-table::
+    :header-rows: 1
+    :widths: 10 90
+
+    * - 項番
+      - 説明
+    * - | (1)
+      - | URIテンプレートの変数{action}は、``RestTeamplate``\の使用時に指定の値に変換される。
+    * - | (2)
+      - | ``UriComponentsBuilder``\ を使用することで、URIテンプレートの変数1つ目が ``buildAndExpand``\ の引数で指定した値に置換され、『http://localhost:8080/api/create』のURIが作成される。
+
+
 .. _RestClientHowToUseFileDownload:
 
 ファイルダウンロード
@@ -1259,6 +1340,8 @@ Basic認証
     \ ``java.lang.OutOfMemoryError``\ が発生する可能性がある。
     そのため、サイズの大きなファイルダウンロードしたい場合は、
     \ ``HttpMessageConverter``\ を独自に実装してレスポンスボディに格納されているダウンロードデータを少しずつファイルに書き出す必要がある。
+
+
 
 
 .. _RestClientHowToExtend:
