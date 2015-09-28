@@ -1219,6 +1219,47 @@ Basic認証
     * ``org.springframework.core.io.ByteArrayResource``  (ファイル名をサーバに連携できない)
 
 
+.. _RestClientHowToUseFileDownload:
+
+ファイルダウンロード
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``RestTeamplate``\を使用してファイルダウンロードを行う場合は、以下のように実装する。
+
+**ファイルダウンロードの実装例**
+
+.. code-block:: java
+
+    RequestEntity requestEntity = RequestEntity
+            .get(uri)
+            .build();
+
+    ResponseEntity<byte[]> responseEntity =
+            restTemplate.exchange(requestEntity, byte[].class);//(1)
+
+    byte[] downloadContent = responseEntity.getBody();//(2)
+
+
+.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+.. list-table::
+    :header-rows: 1
+    :widths: 10 90
+
+    * - 項番
+      - 説明
+    * - | (1)
+      - | ダウンロードファイルを指定したデータ型で扱う。ここでは、バイト配列を指定。
+    * - | (2)
+      - | レスポンスボディからダウンロードしたファイルのデータを取得する。
+
+.. warning:: **サイズの大きいファイルをダウンロードする際の注意点**
+
+    サイズの大きなファイルをデフォルトで登録されている\ ``HttpMessageConverter``\ を使用してJavaオブジェクトに変換すると、
+    \ ``java.lang.OutOfMemoryError``\ が発生する可能性がある。
+    そのため、サイズの大きなファイルダウンロードしたい場合は、
+    \ ``HttpMessageConverter``\ を独自に実装してレスポンスボディに格納されているダウンロードデータを少しずつファイルに書き出す必要がある。
+
+
 
 .. _RestClientHowToUseRestFull:
 
@@ -1299,47 +1340,6 @@ RESTfulなURLを扱うには、URIテンプレートを使用して実装を行�
       - | URIテンプレートの変数{action}は、``RestTeamplate``\の使用時に指定の値に変換される。
     * - | (2)
       - | ``UriComponentsBuilder``\ を使用することで、URIテンプレートの変数1つ目が ``buildAndExpand``\ の引数で指定した値に置換され、『http://localhost:8080/api/create』のURIが作成される。
-
-
-.. _RestClientHowToUseFileDownload:
-
-ファイルダウンロード
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-``RestTeamplate``\を使用してファイルダウンロードを行う場合は、以下のように実装する。
-
-**ファイルダウンロードの実装例**
-
-.. code-block:: java
-
-    RequestEntity requestEntity = RequestEntity
-            .get(uri)
-            .build();
-
-    ResponseEntity<byte[]> responseEntity =
-            restTemplate.exchange(requestEntity, byte[].class);//(1)
-
-    byte[] downloadContent = responseEntity.getBody();//(2)
-
-
-.. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
-.. list-table::
-    :header-rows: 1
-    :widths: 10 90
-
-    * - 項番
-      - 説明
-    * - | (1)
-      - | ダウンロードファイルを指定したデータ型で扱う。ここでは、バイト配列を指定。
-    * - | (2)
-      - | レスポンスボディからダウンロードしたファイルのデータを取得する。
-
-.. warning:: **サイズの大きいファイルをダウンロードする際の注意点**
-
-    サイズの大きなファイルをデフォルトで登録されている\ ``HttpMessageConverter``\ を使用してJavaオブジェクトに変換すると、
-    \ ``java.lang.OutOfMemoryError``\ が発生する可能性がある。
-    そのため、サイズの大きなファイルダウンロードしたい場合は、
-    \ ``HttpMessageConverter``\ を独自に実装してレスポンスボディに格納されているダウンロードデータを少しずつファイルに書き出す必要がある。
 
 
 
