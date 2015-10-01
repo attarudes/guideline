@@ -119,10 +119,17 @@ Spring Frameworkが提供するHTTPクライアントである。
 
         * メディアタイプが\ ``application/x-www-form-urlencoded``\ の場合、\ ``MultiValueMap<String, String>``\ として読込/書込される。
         * メディアタイプが\ ``multipart/form-data``\ の場合、\ ``MultiValueMap<String, Object>``\ として書込され、\ ``Object``\ は\ ``AllEncompassingFormHttpMessageConverter``\ 内に別途設定される\ ``HttpMessageConveter``\ で変換される。
+          （注意： Note 参照）
 
         | デフォルトで登録されるパートデータ変換用の\ ``HttpMessageConveter``\ は、`AllEncompassingFormHttpMessageConverter <https://github.com/spring-projects/spring-framework/blob/4.1.x/spring-web/src/main/java/org/springframework/http/converter/support/AllEncompassingFormHttpMessageConverter.java>`_\
           と `FormHttpMessageConverter <https://github.com/spring-projects/spring-framework/blob/4.1.x/spring-web/src/main/java/org/springframework/http/converter/FormHttpMessageConverter.java>`_\ のソースを参照されたい。なお、任意の\ ``HttpMessageConverter``\ を登録することもできる。
       - | ``MultiValueMap`` [#p3]_
+
+.. note:: **AllEncompassingFormHttpMessageConverterのメディアタイプがmultipart/form-dataの場合について**
+
+    メディアタイプが\ ``multipart/form-data``\ の場合、「\ ``MultiValueMap``\ オブジェクト から HTTPボディ」への変換は可能だが、
+    「HTTPボディ から \ ``MultiValueMap``\ オブジェクト」への変換は現状サポートされていない。
+    よって、「HTTPボディ から \ ``MultiValueMap``\ オブジェクト」への変換を行いたい場合は、独自に実装する必要がある。
 
 \
 
@@ -607,7 +614,7 @@ POSTした結果としてHTTPステータスコード、レスポンスヘッダ
     * - 項番
       - 説明
     * - | (1)
-      - | ``postForEntity``\ メソッドも\ ``getForObject``\ メソッドと同様に簡易にGETリクエストを実装できる。
+      - | ``postForEntity``\ メソッドも\ ``getForObject``\ メソッドと同様に簡易にPOSTリクエストを実装できる。
         | ``postForEntity``\ メソッドを使用した場合は、戻り値は\ ``ResponseEntity``\ となる。
         | レスポンスボディの値は、\ ``ResponseEntity``\ から取得する。
 
