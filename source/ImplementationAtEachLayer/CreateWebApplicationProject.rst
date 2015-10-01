@@ -12,6 +12,8 @@ Webアプリケーション向け開発プロジェクトの作成
 本ガイドラインでは、マルチプロジェクト構成を採用することを推奨している。
 推奨するマルチプロジェクト構成の説明については、「:ref:`application-layering_project-structure`」を参照されたい。
 
+.. _CreateWebApplicationProject:
+
 開発プロジェクトの作成
 --------------------------------------------------------------------------------
 
@@ -1895,6 +1897,193 @@ Spring Frameworkのアプリケーションコンテキスト(DIコンテナ)の
     * 機能詳細に記載がないものについては、ここに説明を記載する。
 
     具体的な対応時期は未定。
+
+
+オフライン環境におけるアプリケーション開発
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+「:ref:`CreateWebApplicationProject`」では、
+マルチプロジェクト構成の開発プロジェクトを、
+`Maven Archetype Plugin <http://maven.apache.org/archetype/maven-archetype-plugin/>`_ の 
+`archetype:generate <http://maven.apache.org/archetype/maven-archetype-plugin/generate-mojo.html>`_ を使用して作成する方法について述べた。
+
+Mavenはオンライン環境での動作が前提であるが、
+以下にオフライン環境へ移行した際のアプリケーション開発方法について述べる。
+
+「:ref:`CreateWebApplicationProject`」で示した通り、 
+**オンライン環境** でプロジェクトを作成する。
+
+
+作成した開発プロジェクトのルートディレクトリへ移動する。
+
+.. code-block:: console
+
+    cd C:\work\todo
+
+|
+
+オフライン環境へ移行する前準備として、プロジェクトの開発に必要であるライブラリやプラグイン等のファイルを取得する。
+`Maven Archetype Plugin <http://maven.apache.org/archetype/maven-archetype-plugin/>`_ の 
+`dependency:go-offline <https://maven.apache.org/plugins/maven-dependency-plugin/go-offline-mojo.html>`_ を実行することで取得する。
+
+
+.. code-block:: console
+
+    mvn dependency:go-offline -Dmaven.repo.local=repository
+
+.. tabularcolumns:: |p{0.25\linewidth}|p{0.75\linewidth}|
+.. list-table::
+    :header-rows: 1
+    :widths: 25 75
+
+    * - パラメータ
+      - 説明
+    * - | \--Dmaven.repo.local
+      - 複製するファイルを保存するフォルダ名を指定する。
+        フォルダが存在している場合は新しくフォルダが作成される。
+        今回はフォルダ名をrepositoryと指定している。
+
+|
+
+実行後のプロジェクト構成は以下である。
+
+.. code-block:: console
+
+    todo
+    ├── pom.xml
+    ├── repository
+    ├── todo-domain
+    ├── todo-env
+    ├── todo-initdb
+    ├── todo-selenium
+    └── todo-web
+    
+
+.. note:: **repositoryの生成場所について**
+
+     -Dmaven.repo.localでrepositoryのファイル名および保存先を指定しない場合、Mavenではデフォルトとして、
+     ${user.home}/.m2/repository が設定されている。
+     ただし、オンライン環境で開発したプロジェクトをオフライン環境でしか開発ができないな他者に引き渡す場合、
+     -Dmaven.repo.localを用いてrepositoryをプロジェクト内に保存してから引き渡すことを推奨する。
+
+.. tip:: **repositoryファイルの保存先を変更する方法について**
+
+    ${maven}/conf/settings.xml の<localRepository>タグ内を編集する。
+   
+    **settings.xml**
+    
+    
+    .. code-block:: console
+
+        <!-- localRepository
+        | The path to the local repository maven will use to store artifacts.
+        |
+        | Default: ${user.home}/.m2/repository
+        <localRepository>/path/to/local/repo</localRepository>
+        -->
+        
+
+
+|
+
+以下のコマンドを実行してwarファイルまたはjarファイルを作成する。
+
+
+.. code-block:: console
+
+    mvn package -Dmaven.repo.local=repository
+
+.. warning::
+
+    オンライン環境でpackageを一度も実行しなければ、ビルドに必要なプラグイン等を取得することができない。
+    そのため、オンライン環境でpackageを一度実行し、プラグイン等を取得しておくことで、
+    オフライン環境へ移行した後においても同様のコマンドを実行できるようにする必要がある。
+
+|
+
+ビルドが成功した場合、以下のようなログが出力される。
+
+.. code-block:: console
+
+	(... omit)    
+	[INFO] ------------------------------------------------------------------------
+	[INFO] Reactor Summary:
+	[INFO]
+	[INFO] TERASOLUNA Server Framework for Java (5.x) Web Blank Multi Project (MyBa
+	tis3) SUCCESS [  0.006 s]
+	[INFO] todo-env ........................................... SUCCESS [ 46.565 s]
+	[INFO] todo-domain ........................................ SUCCESS [  0.684 s]
+	[INFO] todo-web ........................................... SUCCESS [ 12.832 s]
+	[INFO] todo-initdb ........................................ SUCCESS [  0.067 s]
+	[INFO] todo-selenium ...................................... SUCCESS [01:13 min]
+	[INFO] ------------------------------------------------------------------------
+	[INFO] BUILD SUCCESS
+	[INFO] ------------------------------------------------------------------------
+	[INFO] Total time: 02:14 min
+	[INFO] Finished at: 2015-10-01T10:32:34+09:00
+	[INFO] Final Memory: 36M/206M
+	[INFO] ------------------------------------------------------------------------
+
+|
+
+実行後のプロジェクト構成は以下である。プロジェクトの各層にwarファイルまたはjarファイルが作成される。
+プロジェクト構成の詳細は「:ref:`CreateWebApplicationProjectConfigurationMulti`」を参照されたい。
+
+.. code-block:: console
+
+    todo
+    ├── pom.xml
+    ├── repository
+    ├── todo-domain
+    │   ├── pom.xml
+    │   ├── src
+    │   └── target
+    │        ├── (omit)
+    │        ├──  …
+    │        └── todo-domain-1.0.0-SNAPSHOT.jar
+    ├── todo-env
+    │   ├── pom.xml
+    │   ├── src
+    │   └── target
+    │        ├── (omit)
+    │        ├──  …
+    │        ├── todo-env-1.0.0-SNAPSHOT-sources.jar
+    │        └── todo-env-1.0.0-SNAPSHOT.jar
+    ├── todo-initdb
+    │   ├── pom.xml
+    │   ├── src
+    │   └── target
+    │        └── todo-initdb-1.0.0-SNAPSHOT.jar
+    ├── todo-selenium
+    │   ├── pom.xml
+    │   ├── src
+    │   └── target
+    │        ├── (omit)
+    │        ├──  …
+    │        └── todo-selenium-1.0.0-SNAPSHOT.jar
+    └── todo-web
+         ├── pom.xml
+         ├── src
+         └── target
+              ├── (omit)
+              ├──  …
+              └── todo-domain-1.0.0-SNAPSHOT.jar
+
+
+.. note:: **作成されるファイルの種類について**
+
+    各モジュールの構成を定義するPOM（Project Object Model）ファイルで設定したビルド方法に従って、warファイルまたはjarファイルが作成される。
+
+|
+
+以上の操作を行うことで、プロジェクト開発に必要なライブラリやプラグインをrepositoryファイル内に保存した。
+よって、プロジェクト開発環境がオフライン環境へ移行した場合においてもオンライン環境と同様に継続して開発を進めることが可能となる。
+
+.. warning:: **オフライン環境での開発における注意点**
+
+    オフライン環境ではPOM（Project Object Model）ファイルを編集することが不可能となる。
+    編集を加えることで、ビルド時にインターネット上から必要なライブラリやプラグイン等をダウンロードするため、ビルドに失敗する。
+    したがって、POMファイルに編集を加えたい場合は、再度オンライン環境へ戻る必要がある。
 
 .. raw:: latex
 
