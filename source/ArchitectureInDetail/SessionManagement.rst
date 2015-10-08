@@ -1,4 +1,4 @@
-セッション管理
+﻿セッション管理
 ================================================================================
 
 .. only:: html
@@ -1051,21 +1051,15 @@ sessionスコープのBeanの利用
     @Inject
     SessionCart sessionCart; // (1)
 
-    // (2)
-    @ModelAttribute
-    public SessionCart setUpSessionCart() {
-        return sessionCart;
-    }
-
     @RequestMapping(value = "add")
     public String addCart(@Validated ItemForm form, BindingResult result) {
         if (result.hasErrors()) {
             return "item/item";
         }
         CartItem cartItem = beanMapper.map(form, CartItem.class);
-        Cart addedCart = cartService.addCartItem(sessionCart.getCart(), // (3)
+        Cart addedCart = cartService.addCartItem(sessionCart.getCart(), // (2)
                 cartItem);
-        sessionCart.setCart(addedCart); // (4)
+        sessionCart.setCart(addedCart); // (3)
         return "redirect:/cart";
     }
 
@@ -1079,17 +1073,38 @@ sessionスコープのBeanの利用
     * - | (1)
       - | sessionスコープのBeanを、ControllerにInjectする。
     * - | (2)
-      - | View(JSP)から参照できるようにするために、\ ``Model``\ オブジェクトに、sessionスコープのBeanを追加する。
-    * - | (3)
       - | sessionスコープのBeanのメソッド呼び出しを行うと、セッションに格納されているオブジェクトが返却される。
         | セッションにオブジェクトが格納されていない場合は、新たに生成されたオブジェクトが返却され、セッションにも格納される。
         | 上記例では、カートに追加する前に在庫数などのチェックを行うため、Serviceのメソッドを呼び出している。
-    * - | (4)
+    * - | (3)
       - | 上記例では、\ ``CartService``\ のaddCartItemメソッドの引数に渡した\ ``Cart``\ オブジェクトと、
         | 返り値で返却される\ ``Cart``\ オブジェクトが、別のインスタンスになる可能性があるため、
         | 返却された ``Cart`` オブジェクトをsessionスコープのBeanに設定している。
-        | (2)で説明した処理によって、sessionスコープのBeanは、\ ``Model``\ オブジェクトに格納されているため、
-        | View(JSP)からも、\ ``CartService``\ のaddCartItemメソッドから返却された\ ``Cart``\ オブジェクトを参照することができる。
+
+ .. note:: **View(JSP)からsessionスコープのBeanを参照する方法**
+
+     spEL式を用いることでControllerでModelオブジェクトにBeanを追加しなくても、JSPからsessionスコープのBeanを参照することができる。
+
+ .. code-block:: jsp
+
+    <spring:eval var="cart" expression="@sessionCart.cart" />     <%-- (1) --%>
+    
+    <%-- omitted --%>
+    
+    items="${cart.cartItems}"     <%-- (2) --%>　　　　
+    
+ .. tabularcolumns:: |p{0.10\linewidth}|p{0.90\linewidth}|
+ .. list-table::
+    :widths: 10 90
+    :header-rows: 1
+
+    * - 項番
+      - 説明
+    * - | (1)
+      - | sessionスコープのBeanを参照する
+    * - | (2)
+      - | sessionスコープのBeanを表示する
+
 
 セッションに格納したオブジェクトの削除
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
