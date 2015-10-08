@@ -2059,23 +2059,23 @@ sessionスコープのBeanを使った複数のControllerを跨いだ画面遷�
             return new ItemForm();
         }
 
-        // (2)
+        // (3)
         @RequestMapping
         public String view(Model model) {
             return "item/item";
         }
 
-        // (3)
+        // (4)
         @RequestMapping(value = "add")
         public String addCart(@Validated ItemForm form, BindingResult result) {
             if (result.hasErrors()) {
                 return "item/item";
             }
             CartItem cartItem = beanMapper.map(form, CartItem.class);
-            Cart cart = cartService.addCartItem(sessionCart.getCart(), // (4)
+            Cart cart = cartService.addCartItem(sessionCart.getCart(), // (5)
                     cartItem);
-            sessionCart.setCart(cart); // (5)
-            return "redirect:/cart"; // (6)
+            sessionCart.setCart(cart); // (6)
+            return "redirect:/cart"; // (7)
         }
     }
 
@@ -2086,16 +2086,16 @@ sessionスコープのBeanを使った複数のControllerを跨いだ画面遷�
 
     * - 項番
       - 説明
-    * - | (2)
-      - | 商品画面を、表示するための処理メソッド。
     * - | (3)
-      - | 指定された商品を、カートに追加するための処理メソッド。
+      - | 商品画面を、表示するための処理メソッド。
     * - | (4)
-      - | セッションに格納されている\ ``Cart``\ オブジェクトを、Serviceのメソッドに渡す。
+      - | 指定された商品を、カートに追加するための処理メソッド。
     * - | (5)
+      - | セッションに格納されている\ ``Cart``\ オブジェクトを、Serviceのメソッドに渡す。
+    * - | (6)
       - | Serviceのメソッドから返却された\ ``Cart``\ オブジェクトを、sessionスコープのBeanに反映する。
         | sessionスコープのBeanに反映することで、セッションに反映される。
-    * - | (6)
+    * - | (7)
       - | 商品をカートに追加した後に、カート画面を表示するためのリクエストに、リダイレクトする。
         | **別Controllerの画面に遷移する場合は、直接View(JSP)を呼び出すのではなく、画面を表示するためのリクエストにリダイレクトすることを推奨する。**
 
@@ -2121,14 +2121,14 @@ sessionスコープのBeanを使った複数のControllerを跨いだ画面遷�
             return new CartForm();
         }
 
-        // (7)
+        // (8)
         @RequestMapping
         public String cart(CartForm form) {
             beanMapper.map(sessionCart.getCart(), form);
             return "cart/cart";
         }
 
-        // (8)
+        // (9)
         @RequestMapping(params = "edit", method = RequestMethod.POST)
         public String edit(@Validated CartForm form, BindingResult result,
                 Model model) {
@@ -2143,9 +2143,9 @@ sessionスコープのBeanを使った複数のControllerを跨いだ画面遷�
             }
 
             cart = cartService.saveCart(cart);
-            sessionCart.setCart(cart); // (9)
+            sessionCart.setCart(cart); // (10)
 
-            return "redirect:/cart"; // (10)
+            return "redirect:/cart"; // (11)
         }
 
 
@@ -2158,14 +2158,14 @@ sessionスコープのBeanを使った複数のControllerを跨いだ画面遷�
 
     * - 項番
       - 説明
-    * - | (7)
-      - | カート画面(数量変更画面)を表示するための処理メソッド。
     * - | (8)
-      - | 数量変更を、行うための処理メソッド。
+      - | カート画面(数量変更画面)を表示するための処理メソッド。
     * - | (9)
+      - | 数量変更を、行うための処理メソッド。
+    * - | (10)
       - | Serviceのメソッドから返却された\ ``Cart``\ オブジェクトをsessionスコープのBeanに反映する。
         | sessionスコープのBeanに反映することで、セッションに反映される。
-    * - | (10)
+    * - | (11)
       - | 数量変更を行った後に、カート画面(数量変更画面)を表示するためのリクエストに、リダイレクトする。
         | **更新処理を行った場合は、直接View(JSP)を呼び出すのではなく、画面を表示するためのリクエストにリダイレクトすることを推奨する。**
 
@@ -2185,20 +2185,20 @@ sessionスコープのBeanを使った複数のControllerを跨いだ画面遷�
             return new OrderForm();
         }
 
-        // (11)
+        // (12)
         @RequestMapping
         public String view() {
             return "order/order";
         }
 
-        // (12)
+        // (13)
         @RequestMapping(method = RequestMethod.POST)
         public String order() {
             // ...
             return "redirect:/order?complete";
         }
 
-        // (13)
+        // (14)
         @RequestMapping(params = "complete", method = RequestMethod.GET)
         public String complete(Model model, SessionStatus sessionStatus) {
             sessionCart.clearCart();
@@ -2214,11 +2214,11 @@ sessionスコープのBeanを使った複数のControllerを跨いだ画面遷�
 
     * - 項番
       - 説明
-    * - | (11)
-      - | 注文画面を、表示するための処理メソッド。
     * - | (12)
-      - | 注文処理を行うための処理メソッド。
+      - | 注文画面を、表示するための処理メソッド。
     * - | (13)
+      - | 注文処理を行うための処理メソッド。
+    * - | (14)
       - | 注文完了画面を表示するための処理メソッド。
 
 - 商品画面(JSP)
@@ -2241,7 +2241,7 @@ sessionスコープのBeanを使った複数のControllerを跨いだ画面遷�
             <form:input path="quantity" />
             <form:errors path="quantity" />
             <div>
-                <%-- (14) --%>
+                <%-- (15) --%>
                 <form:button>Add</form:button>
             </div>
         </form:form>
@@ -2258,7 +2258,7 @@ sessionスコープのBeanを使った複数のControllerを跨いだ画面遷�
 
     * - 項番
       - 説明
-    * - | (14)
+    * - | (15)
       - | 商品を追加するためのボタン。
 
 - カート画面(JSP)
@@ -2270,7 +2270,7 @@ sessionスコープのBeanを使った複数のControllerを跨いだ画面遷�
     <title>Cart</title>
     </head>
     <body>
-        <%-- (15) --%>
+        <%-- (16) --%>
         <spring:eval var="cart" experssion="@sessionCart.cart" />
         <h1>Cart</h1>
         <c:choose>
@@ -2279,7 +2279,7 @@ sessionスコープのBeanを使った複数のControllerを跨いだ画面遷�
             </c:when>
             <c:otherwise>
                 CART ID :
-                <%-- (16) --%>
+                <%-- (17) --%>
                 ${f:h(cart.id)}
                 <form:form modelAttribute="cartForm">
                     <table border="1">
@@ -2307,14 +2307,14 @@ sessionスコープのBeanを使った複数のControllerを跨いだ画面遷�
                             </c:forEach>
                         </tbody>
                     </table>
-                    <%-- (17) --%>
+                    <%-- (18) --%>
                     <form:button name="edit">Save</form:button>
                 </form:form>
             </c:otherwise>
         </c:choose>
         <c:if test="${ not empty cart.cartItems }">
             <div>
-                <%-- (18) --%>
+                <%-- (19) --%>
                 <a href="${pageContext.request.contextPath}/order">Go to Order</a>
             </div>
         </c:if>
@@ -2331,13 +2331,13 @@ sessionスコープのBeanを使った複数のControllerを跨いだ画面遷�
 
     * - 項番
       - 説明
-    * - | (15)
-      - | spEL式を用いてsessionスコープのBeanを参照する。
     * - | (16)
-      - | spEL式を用いてsessionスコープのBeanを表示する。
+      - | spEL式を用いてsessionスコープのBeanを参照する。
     * - | (17)
-      - | 数量を更新するためのボタン。
+      - | spEL式を用いてsessionスコープのBeanを表示する。
     * - | (18)
+      - | 数量を更新するためのボタン。
+    * - | (19)
       - | 注文画面を表示するためのリンク。
 
 - 注文画面(JSP)
@@ -2371,7 +2371,7 @@ sessionスコープのBeanを使った複数のControllerを跨いだ画面遷�
             </tbody>
         </table>
         <form:form modelAttribute="orderForm">
-            <%-- (19) --%>
+            <%-- (20) --%>
             <form:button>Order</form:button>
         </form:form>
         <div>
@@ -2390,7 +2390,7 @@ sessionスコープのBeanを使った複数のControllerを跨いだ画面遷�
 
     * - 項番
       - 説明
-    * - | (19)
+    * - | (20)
       - | 注文するためのボタン。
 
 - 注文完了画面(JSP)
